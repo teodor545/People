@@ -128,7 +128,7 @@ public class EditForm extends FormLayout {
         addressAddType.setWidth("20%");
 
         Binder<TextField> fieldBinder = new Binder<>();
-        fieldBinder.forField(addressAddField)
+        fieldBinder.forField(addressAddType)
                 .withValidator(ValidatorFactory.getValidator(String.class,"type"))
                 .bind(TextField::getValue, TextField::setValue);
 
@@ -136,7 +136,7 @@ public class EditForm extends FormLayout {
         Button addressAddButton = new Button("Add", event -> {
             String address = addressAddField.getValue();
             String type = addressAddType.getValue();
-            if (person != null) {
+            if (person != null && fieldBinder.validate().isOk()) {
                 Address addressEntity = new Address();
                 addressEntity.setAddressInfo(address);
                 addressEntity.setAddressType(type);
@@ -170,16 +170,13 @@ public class EditForm extends FormLayout {
         TextField addressInfoField = new TextField();
         addressInfoField.setWidthFull();
         addressBinder.forField(addressInfoField)
-                .asRequired("Address field can't be empty")
-                .withValidator(info -> info.length() <= 300, "Exceeds maximum address length of 300")
                 .bind(Address::getAddressInfo, Address::setAddressInfo);
         addressInfo.setEditorComponent(addressInfoField);
 
         TextField addressTypeField = new TextField();
         addressTypeField.setWidthFull();
         addressBinder.forField(addressTypeField)
-                .withValidator(type -> type!= null && type.length() > 0 && type.length() <= 5 ,
-                        "Address type must be between 1 and 5 characters")
+                .withValidator(ValidatorFactory.getValidator(String.class, "type"))
                 .bind(Address::getAddressType, Address::setAddressType);
         addressType.setEditorComponent(addressTypeField);
 
