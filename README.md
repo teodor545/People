@@ -1,6 +1,6 @@
 People app <br>
 
-Build using Spring boot,JPA,Postgres as backend and Vaadin built in UI as built in fronted.<br>
+Build using Spring boot,JPA,Postgres as backend and Vaadin built in UI as frontend.<br>
 
 Usage info: <br>
 - Entry point localhost:8081/people
