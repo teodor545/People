@@ -3,7 +3,6 @@ package com.task.third.service.web.ui.validation;
 import com.vaadin.flow.data.binder.Validator;
 
 public class ValidatorFactory {
-
     public static Validator<String> getStringValidator(String validatorName) {
         Validator<String> validator = null;
         if ("full_name".equalsIgnoreCase(validatorName)) {

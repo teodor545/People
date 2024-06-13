@@ -14,6 +14,7 @@ import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -50,7 +51,6 @@ public class EditForm extends FormLayout {
     private Grid<Address> addressEditGrid = new Grid<>(Address.class);
     private Grid<Mail> mailEditGrid = new Grid<>(Mail.class);
 
-    private VerticalLayout mainFormLayout = new VerticalLayout();
     private HorizontalLayout mainActions = new HorizontalLayout();
     private HorizontalLayout addressCreateLayout = new HorizontalLayout();
     private HorizontalLayout mailCreateLayout = new HorizontalLayout();
@@ -68,13 +68,13 @@ public class EditForm extends FormLayout {
         configureEmailCreate();
         configureMainActions();
 
-        combineComponents();
-
-        add(mainFormLayout);
+        add(combineComponents());
         setVisible(false);
     }
 
-    private void combineComponents() {
+    private VerticalLayout combineComponents() {
+        VerticalLayout mainFormLayout = new VerticalLayout();
+
         mainFormLayout.setFlexGrow(0);
         mainFormLayout.setFlexShrink(0);
         mainFormLayout.setClassName("edit-form-main-layout");
@@ -87,6 +87,8 @@ public class EditForm extends FormLayout {
                 mailEditGrid,
                 mailCreateLayout,
                 mainActions);
+
+        return mainFormLayout;
     }
 
 
@@ -217,12 +219,10 @@ public class EditForm extends FormLayout {
                 addressEditGrid.setItems(person.getAddresses());
             }
         });
-        Button cancelButton = new Button(VaadinIcon.CLOSE.create(),
-                e -> editor.cancel());
-        cancelButton.addThemeVariants(ButtonVariant.LUMO_ICON,
-                ButtonVariant.LUMO_ERROR);
-        HorizontalLayout editAddressActions = new HorizontalLayout(saveButton,
-                cancelButton);
+        Button cancelButton = new Button(VaadinIcon.CLOSE.create(), e -> editor.cancel());
+        cancelButton.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_ERROR);
+
+        HorizontalLayout editAddressActions = new HorizontalLayout(saveButton, cancelButton);
         editAddressActions.setPadding(false);
         editColumn.setEditorComponent(editAddressActions);
     }
@@ -284,11 +284,9 @@ public class EditForm extends FormLayout {
             }
         });
         Button cancelButton = new Button(VaadinIcon.CLOSE.create(), e -> editor.cancel());
-        cancelButton.addThemeVariants(ButtonVariant.LUMO_ICON,
-                ButtonVariant.LUMO_ERROR);
+        cancelButton.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_ERROR);
 
-        HorizontalLayout editMailsActions = new HorizontalLayout(saveButton,
-                cancelButton);
+        HorizontalLayout editMailsActions = new HorizontalLayout(saveButton, cancelButton);
         editMailsActions.setPadding(false);
 
         editColumn.setEditorComponent(editMailsActions);
@@ -349,9 +347,11 @@ public class EditForm extends FormLayout {
         try {
             personService.deletePerson(person);
             changeHandler.onChange();
-            Notification.show("Person has been deleted!", 4000, Notification.Position.MIDDLE);
+            Notification notification = Notification.show("Person has been deleted!", 4000, Notification.Position.MIDDLE);
+            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (Exception ex) {
-            Notification.show("Failed to delete person!", 4000, Notification.Position.MIDDLE);
+            Notification notification = Notification.show("Failed to delete person!", 4000, Notification.Position.MIDDLE);
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
 
@@ -359,9 +359,11 @@ public class EditForm extends FormLayout {
         try {
             personService.savePerson(person);
             changeHandler.onChange();
-            Notification.show("Person has been saved!", 4000, Notification.Position.MIDDLE);
+            Notification notification = Notification.show("Person has been saved!", 4000, Notification.Position.MIDDLE);
+            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (Exception ex) {
-            Notification.show("Failed to save person!", 4000, Notification.Position.MIDDLE);
+            Notification notification = Notification.show("Failed to save person!", 4000, Notification.Position.MIDDLE);
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
 

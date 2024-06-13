@@ -15,7 +15,7 @@ public class TypeValidator implements Validator<String> {
         if (typePattern.matcher(value).find()) {
             return ValidationResult.ok();
         } else {
-            return ValidationResult.error("Type must be between 1 and 5 characters");
+            return ValidationResult.error("1 to 5 characters");
         }
     }
 }

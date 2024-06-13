@@ -45,10 +45,18 @@ public class MainView extends VerticalLayout {
 
         listPeople();
 
-        add(getHeader(), getContent());
+        add(getHeader(), getBody());
     }
 
     private HorizontalLayout getHeader() {
+        addPerson.addClickListener(
+                e -> {
+                    Person person = new Person();
+                    person.setAddresses(new ArrayList<>());
+                    person.setMails(new ArrayList<>());
+                    editForm.editPerson(person, true);
+                });
+
         filterField.setPlaceholder("Filter by name");
         filterField.setValueChangeMode(ValueChangeMode.LAZY);
         filterField.addValueChangeListener(e -> listPeople(e.getValue()));
@@ -61,18 +69,6 @@ public class MainView extends VerticalLayout {
     }
 
     private void addActions() {
-        grid.addItemClickListener(e -> {
-            if(e.getClickCount() >= 2){
-                editForm.editPerson(e.getItem(), false);
-            }
-        });
-        addPerson.addClickListener(
-                e -> {
-                    Person person = new Person();
-                    person.setAddresses(new ArrayList<>());
-                    person.setMails(new ArrayList<>());
-                    editForm.editPerson(person, true);
-                });
         editForm.setChangeHandler(() -> {
             editForm.setVisible(false);
             listPeople(filterField.getValue());
@@ -88,6 +84,11 @@ public class MainView extends VerticalLayout {
         grid.getColumnByKey("pin").setSortable(false).setHeader("PIN");
         grid.getColumnByKey("mails").setHeader("Mails").setRenderer(createMailRenderer());
         grid.getColumnByKey("addresses").setHeader("Addresses").setRenderer(createAddressRenderer());
+        grid.addItemClickListener(e -> {
+            if(e.getClickCount() >= 2){
+                editForm.editPerson(e.getItem(), false);
+            }
+        });
     }
 
     private static ComponentRenderer<VerticalLayout, Person> createMailRenderer() {
@@ -121,7 +122,7 @@ public class MainView extends VerticalLayout {
     }
 
 
-    private Component getContent() {
+    private Component getBody() {
         HorizontalLayout content = new HorizontalLayout(grid, editForm);
         content.setSizeFull();
         content.addClassNames("page-content");
