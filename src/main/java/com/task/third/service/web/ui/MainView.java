@@ -7,11 +7,13 @@ import com.task.third.service.web.service.PersonService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
@@ -19,6 +21,7 @@ import com.vaadin.flow.router.Route;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @PageTitle("People")
 @Route("/people")
@@ -30,51 +33,34 @@ public class MainView extends VerticalLayout {
     private final Button addPerson = new Button("Add person", VaadinIcon.PLUS.create());
 
     public MainView(PersonService personService, EditForm editForm) {
-        addClassName("main_view");
         this.personService = personService;
         this.editForm = editForm;
 
+        addClassName("main-view");
         setSizeFull();
 
+        configureGrid();
+
+        addActions();
+
+        listPeople();
+
+        add(getHeader(), getContent());
+    }
+
+    private HorizontalLayout getHeader() {
         filterField.setPlaceholder("Filter by name");
         filterField.setValueChangeMode(ValueChangeMode.LAZY);
-        filterField.addValueChangeListener(e -> listCustomers(e.getValue()));
+        filterField.addValueChangeListener(e -> listPeople(e.getValue()));
 
         HorizontalLayout header = new HorizontalLayout();
         header.addClassName("toolbar");
         header.add(filterField);
         header.add(addPerson);
+        return header;
+    }
 
-        grid.getColumns().forEach(col -> col.setAutoWidth(true));
-        grid.setColumns("fullName", "pin", "addresses", "mails");
-        grid.getColumnByKey("fullName").setHeader("Name");
-        grid.getColumnByKey("pin").setHeader("PIN");
-        grid.getColumnByKey("mails").setHeader("Emails");
-        Grid.Column<Person> emails = grid.getColumnByKey("mails");;
-        emails.setRenderer(new ComponentRenderer<>(person -> {
-            VerticalLayout listLayout = new VerticalLayout();
-            for (Address address : person.getAddresses()) {
-                Span span = new Span(address.getAddressInfo()+ ", " +address.getAddressType());
-                listLayout.add(span);
-            }
-            listLayout.setSpacing(false);
-            listLayout.setPadding(false);
-            return listLayout;
-        }));
-
-        Grid.Column<Person> addresses = grid.getColumnByKey("addresses");
-        addresses.setHeader("Addresses");
-        addresses.setRenderer(new ComponentRenderer<>(person -> {
-            VerticalLayout listLayout = new VerticalLayout();
-            for (Mail mail : person.getMails()) {
-                Span span = new Span(mail.getEmail() + ", " + mail.getEmailType());
-                listLayout.add(span);
-            }
-            listLayout.setSpacing(false);
-            listLayout.setPadding(false);
-            return listLayout;
-        }));
-
+    private void addActions() {
         grid.addItemClickListener(e -> {
             if(e.getClickCount() >= 2){
                 editForm.editPerson(e.getItem(), false);
@@ -92,33 +78,72 @@ public class MainView extends VerticalLayout {
         editForm.setChangeHandler(() ->
         {
             editForm.setVisible(false);
-            listCustomers(filterField.getValue());
+            listPeople(filterField.getValue());
         });
+    }
 
-        listCustomers();
+    private void configureGrid() {
+        grid.setPageSize(15);
+        grid.setHeight("70%");
+        grid.getColumns().forEach(col -> col.setAutoWidth(true));
+        grid.setColumns("fullName", "pin", "addresses", "mails");
+        grid.getColumnByKey("fullName").setSortable(true).setHeader("Name");
+        grid.getColumnByKey("pin").setSortable(false).setHeader("PIN");
+        Grid.Column<Person> emails = grid.getColumnByKey("mails");
+        emails.setHeader("Mails");
+        emails.setRenderer(new ComponentRenderer<>(person -> {
+            VerticalLayout listLayout = new VerticalLayout();
+            for (Mail mail : person.getMails()) {
+                if (mail.getEmail() != null && !mail.getEmail().isEmpty()) {
+                    Span span = new Span(mail.getEmail() + ", " + mail.getEmailType());
+                    listLayout.add(span);
+                }
+            }
+            listLayout.setSpacing(false);
+            listLayout.setPadding(false);
+            return listLayout;
+        }));
 
-        add(header, getContent());
+        Grid.Column<Person> addresses = grid.getColumnByKey("addresses");
+        addresses.setHeader("Addresses");
+        addresses.setRenderer(new ComponentRenderer<>(person -> {
+            VerticalLayout listLayout = new VerticalLayout();
+            for (Address address : person.getAddresses()) {
+                if (address.getAddressInfo() != null && !address.getAddressInfo().isEmpty()) {
+                    Span span = new Span(address.getAddressInfo() + ", " + address.getAddressType());
+                    listLayout.add(span);
+                }
+            }
+            listLayout.setSpacing(false);
+            listLayout.setPadding(false);
+            return listLayout;
+        }));
     }
 
 
     private Component getContent() {
         HorizontalLayout content = new HorizontalLayout(grid, editForm);
-        content.setFlexGrow(2, grid);
-        content.setFlexGrow(1, editForm);
-        content.addClassNames("content");
         content.setSizeFull();
+        content.addClassNames("page-content");
         return content;
     }
 
-    private void listCustomers() {
+    private void listPeople() {
         grid.setItems(personService.listAll());
+        sortGrid();
     }
 
-    private void listCustomers(String filterText) {
+    private void sortGrid() {
+        grid.sort(List.of(new GridSortOrder<>(grid.getColumnByKey("fullName"),
+                SortDirection.ASCENDING)));
+    }
+
+    private void listPeople(String filterText) {
         if (StringUtils.hasText(filterText)) {
             grid.setItems(personService.queryByName(filterText));
         } else {
             grid.setItems(personService.listAll());
         }
+        sortGrid();
     }
 }

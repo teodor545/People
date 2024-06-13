@@ -11,6 +11,7 @@ import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.editor.Editor;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -66,14 +67,13 @@ public class EditForm extends FormLayout {
         configureAddressGridForm();
         configureAddressCreate();
         configureEmailGridForm();
-        configureAddEmail();
+        configureEmailCreate();
         configureMainActions();
 
-        mainFormLayout.setWidth("1000px");
         mainFormLayout.setFlexGrow(0);
         mainFormLayout.setFlexShrink(0);
-        mainFormLayout.setSpacing(true);
-        mainFormLayout.setMargin(false);
+        mainFormLayout.setClassName("edit-form-main-layout");
+        mainFormLayout.setMinWidth("90%");
 
         mainFormLayout.add(
                 personEditLayout,
@@ -82,6 +82,7 @@ public class EditForm extends FormLayout {
                 mailEditGrid,
                 mailCreateLayout,
                 mainActions);
+
         add(mainFormLayout);
         setVisible(false);
     }
@@ -134,20 +135,8 @@ public class EditForm extends FormLayout {
 
 
         Button addressAddButton = new Button("Add", event -> {
-            String address = addressAddField.getValue();
-            String type = addressAddType.getValue();
             if (person != null && fieldBinder.validate().isOk()) {
-                Address addressEntity = new Address();
-                addressEntity.setAddressInfo(address);
-                addressEntity.setAddressType(type);
-                addressEntity.setPerson(person);
-                person.getAddresses().add(addressEntity);
-                addressEditGrid.setItems(person.getAddresses());
-                // find another way...
-                fieldBinder.setValidatorsDisabled(true);
-                addressAddField.clear();
-                addressAddType.clear();
-                fieldBinder.setValidatorsDisabled(false);
+                handleAddAddress(addressAddField, addressAddType, fieldBinder);
             }
         });
         HorizontalLayout addressHorizontal = new HorizontalLayout();
@@ -156,12 +145,28 @@ public class EditForm extends FormLayout {
 
         addressCreateLayout.add(addressHorizontal);
     }
+
+    private void handleAddAddress(TextField addressAddField, TextField addressAddType, Binder<TextField> fieldBinder) {
+        Address addressEntity = new Address();
+        addressEntity.setAddressInfo(addressAddField.getValue());
+        addressEntity.setAddressType(addressAddType.getValue());
+        addressEntity.setPerson(person);
+        person.getAddresses().add(addressEntity);
+        addressEditGrid.setItems(person.getAddresses());
+        // find another way...
+        fieldBinder.setValidatorsDisabled(true);
+        addressAddField.clear();
+        addressAddType.clear();
+        fieldBinder.setValidatorsDisabled(false);
+    }
+
     private void configureAddressGridForm() {
         addressEditGrid.setColumns("addressInfo", "addressType");
         Grid.Column<Address> addressInfo = addressEditGrid.getColumnByKey("addressInfo").setWidth("300px").setFlexGrow(0).setHeader("Address");
         Grid.Column<Address> addressType = addressEditGrid.getColumnByKey("addressType").setWidth("100px").setFlexGrow(0).setHeader("Type");
         addressEditGrid.setAllRowsVisible(true);
         addressEditGrid.setWidthFull();
+
 
         Editor<Address> editor = addressEditGrid.getEditor();
         editor.setBinder(addressBinder);
@@ -192,14 +197,16 @@ public class EditForm extends FormLayout {
         }).setWidth("150px").setFlexGrow(0);
 
         addressEditGrid.addComponentColumn(address -> {
-            Button editButton = new Button(VaadinIcon.TRASH.create());
-            editButton.addClickListener(e -> {
+            Icon icon = VaadinIcon.TRASH.create();
+            icon.setColor("red");
+            Button deleteButton = new Button(icon);
+            deleteButton.addClickListener(e -> {
                 if (person != null) {
                     person.getAddresses().remove(address);
                     addressEditGrid.setItems(person.getAddresses());
                 }
             });
-            return editButton;
+            return deleteButton;
         }).setWidth("80px").setFlexGrow(0);
 
 
@@ -263,7 +270,9 @@ public class EditForm extends FormLayout {
         }).setWidth("150px").setFlexGrow(0);
 
         mailEditGrid.addComponentColumn(mail -> {
-            Button editButton = new Button(VaadinIcon.TRASH.create());
+            Icon icon = VaadinIcon.TRASH.create();
+            icon.setColor("red");
+            Button editButton = new Button(icon);
             editButton.addClickListener(e -> {
                 if (person != null) {
                     person.getMails().remove(mail);
@@ -278,20 +287,18 @@ public class EditForm extends FormLayout {
                 mailEditGrid.setItems(person.getMails());
             }
         });
-        Button cancelButton = new Button(VaadinIcon.CLOSE.create(),
-                e -> {
-                   editor.cancel();
-                }
-        );
+        Button cancelButton = new Button(VaadinIcon.CLOSE.create(), e -> editor.cancel());
         cancelButton.addThemeVariants(ButtonVariant.LUMO_ICON,
                 ButtonVariant.LUMO_ERROR);
+
         HorizontalLayout editMailsActions = new HorizontalLayout(saveButton,
                 cancelButton);
         editMailsActions.setPadding(false);
+
         editColumn.setEditorComponent(editMailsActions);
     }
 
-    private void configureAddEmail() {
+    private void configureEmailCreate() {
         TextField emailAddField = new TextField("Email");
         TextField emailAddType = new TextField("Type");
 
@@ -306,19 +313,8 @@ public class EditForm extends FormLayout {
 
 
         Button emailAddButton = new Button("Add", event -> {
-            String email = emailAddField.getValue();
-            String type = emailAddType.getValue();
             if (person != null && fieldBinder.validate().isOk()) {
-                Mail mailEntity = new Mail();
-                mailEntity.setEmail(email);
-                mailEntity.setEmailType(type);
-                mailEntity.setPerson(person);
-                person.getMails().add(mailEntity);
-                mailEditGrid.setItems(person.getMails());
-                fieldBinder.setValidatorsDisabled(true);
-                emailAddField.clear();
-                emailAddType.clear();
-                fieldBinder.setValidatorsDisabled(false);
+                handleAddMail(emailAddField, emailAddType, fieldBinder);
             }
         });
         HorizontalLayout emailAddLayout = new HorizontalLayout();
@@ -326,6 +322,19 @@ public class EditForm extends FormLayout {
         emailAddLayout.add(emailAddField, emailAddType, emailAddButton);
 
         mailCreateLayout.add(emailAddLayout);
+    }
+
+    private void handleAddMail(TextField emailAddField, TextField emailAddType, Binder<TextField> fieldBinder) {
+        Mail mailEntity = new Mail();
+        mailEntity.setEmail(emailAddField.getValue());
+        mailEntity.setEmailType(emailAddType.getValue());
+        mailEntity.setPerson(person);
+        person.getMails().add(mailEntity);
+        mailEditGrid.setItems(person.getMails());
+        fieldBinder.setValidatorsDisabled(true);
+        emailAddField.clear();
+        emailAddType.clear();
+        fieldBinder.setValidatorsDisabled(false);
     }
 
 
@@ -385,9 +394,6 @@ public class EditForm extends FormLayout {
         personBinder.setBean(this.person);
 
         setVisible(true);
-
-
-        //fullName.focus();
     }
 
     public void setChangeHandler(ChangeHandler ch) {
