@@ -91,7 +91,14 @@ public class MainView extends VerticalLayout {
         grid.getColumnByKey("pin").setSortable(false).setHeader("PIN");
         Grid.Column<Person> emails = grid.getColumnByKey("mails");
         emails.setHeader("Mails");
-        emails.setRenderer(new ComponentRenderer<>(person -> {
+        emails.setRenderer(createMailRenderer());
+        Grid.Column<Person> addresses = grid.getColumnByKey("addresses");
+        addresses.setHeader("Addresses");
+        addresses.setRenderer(createAddressRenderer());
+    }
+
+    private static ComponentRenderer<VerticalLayout, Person> createMailRenderer() {
+        return new ComponentRenderer<>(person -> {
             VerticalLayout listLayout = new VerticalLayout();
             for (Mail mail : person.getMails()) {
                 if (mail.getEmail() != null && !mail.getEmail().isEmpty()) {
@@ -102,11 +109,11 @@ public class MainView extends VerticalLayout {
             listLayout.setSpacing(false);
             listLayout.setPadding(false);
             return listLayout;
-        }));
+        });
+    }
 
-        Grid.Column<Person> addresses = grid.getColumnByKey("addresses");
-        addresses.setHeader("Addresses");
-        addresses.setRenderer(new ComponentRenderer<>(person -> {
+    private ComponentRenderer<VerticalLayout, Person> createAddressRenderer() {
+        return new ComponentRenderer<>(person -> {
             VerticalLayout listLayout = new VerticalLayout();
             for (Address address : person.getAddresses()) {
                 if (address.getAddressInfo() != null && !address.getAddressInfo().isEmpty()) {
@@ -117,7 +124,7 @@ public class MainView extends VerticalLayout {
             listLayout.setSpacing(false);
             listLayout.setPadding(false);
             return listLayout;
-        }));
+        });
     }
 
 

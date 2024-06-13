@@ -51,6 +51,7 @@ public class EditForm extends FormLayout {
     private Grid<Address> addressEditGrid = new Grid<>(Address.class);
     private Grid<Mail> mailEditGrid = new Grid<>(Mail.class);
 
+    private VerticalLayout mainFormLayout = new VerticalLayout();
     private HorizontalLayout mainActions = new HorizontalLayout();
     private HorizontalLayout addressCreateLayout = new HorizontalLayout();
     private HorizontalLayout mailCreateLayout = new HorizontalLayout();
@@ -61,8 +62,6 @@ public class EditForm extends FormLayout {
         addClassName("person-edit-form");
         this.personService = personService;
 
-        VerticalLayout mainFormLayout = new VerticalLayout();
-
         configurePersonEditLayout();
         configureAddressGridForm();
         configureAddressCreate();
@@ -70,6 +69,13 @@ public class EditForm extends FormLayout {
         configureEmailCreate();
         configureMainActions();
 
+        combineComponents();
+
+        add(mainFormLayout);
+        setVisible(false);
+    }
+
+    private void combineComponents() {
         mainFormLayout.setFlexGrow(0);
         mainFormLayout.setFlexShrink(0);
         mainFormLayout.setClassName("edit-form-main-layout");
@@ -82,9 +88,6 @@ public class EditForm extends FormLayout {
                 mailEditGrid,
                 mailCreateLayout,
                 mainActions);
-
-        add(mainFormLayout);
-        setVisible(false);
     }
 
 
