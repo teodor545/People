@@ -17,7 +17,6 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.spring.annotation.SpringComponent;
@@ -96,11 +95,11 @@ public class EditForm extends FormLayout {
         TextField pin = new TextField("PIN");
 
         personBinder.forField(fullName)
-                .withValidator(ValidatorFactory.getValidator(String.class,"full_name"))
+                .withValidator(ValidatorFactory.getStringValidator("full_name"))
                 .bind(Person::getFullName, Person::setFullName);
 
         personBinder.forField(pin)
-                .withValidator(ValidatorFactory.getValidator(String.class,"pin"))
+                .withValidator(ValidatorFactory.getStringValidator("pin"))
                 .bind(Person::getPin, Person::setPin);
 
         personEditLayout.setPadding(false);
@@ -133,7 +132,7 @@ public class EditForm extends FormLayout {
 
         Binder<TextField> fieldBinder = new Binder<>();
         fieldBinder.forField(addressAddType)
-                .withValidator(ValidatorFactory.getValidator(String.class,"type"))
+                .withValidator(ValidatorFactory.getStringValidator("type"))
                 .bind(TextField::getValue, TextField::setValue);
 
 
@@ -184,7 +183,7 @@ public class EditForm extends FormLayout {
         TextField addressTypeField = new TextField();
         addressTypeField.setWidthFull();
         addressBinder.forField(addressTypeField)
-                .withValidator(ValidatorFactory.getValidator(String.class, "type"))
+                .withValidator(ValidatorFactory.getStringValidator("type"))
                 .bind(Address::getAddressType, Address::setAddressType);
         addressType.setEditorComponent(addressTypeField);
 
@@ -243,7 +242,7 @@ public class EditForm extends FormLayout {
         mailEditField.setRequired(false);
         mailEditField.setWidthFull();
         mailBinder.forField(mailEditField)
-                .withValidator(ValidatorFactory.getValidator(String.class,"email"))
+                .withValidator(ValidatorFactory.getStringValidator("email"))
                 .bind(Mail::getEmail, Mail::setEmail);
         emailColumn.setEditorComponent(mailEditField);
 
@@ -251,7 +250,7 @@ public class EditForm extends FormLayout {
         TextField emailTypeEditField = new TextField();
         emailTypeEditField.setWidthFull();
         mailBinder.forField(emailTypeEditField)
-                .withValidator(ValidatorFactory.getValidator(String.class,"type"))
+                .withValidator(ValidatorFactory.getStringValidator("type"))
                 .bind(Mail::getEmailType, Mail::setEmailType);
         emailTypeColumn.setEditorComponent(emailTypeEditField);
 
@@ -301,10 +300,10 @@ public class EditForm extends FormLayout {
 
         Binder<TextField> fieldBinder = new Binder<>();
         fieldBinder.forField(emailAddType)
-                .withValidator(ValidatorFactory.getValidator(String.class,"type"))
+                .withValidator(ValidatorFactory.getStringValidator("type"))
                 .bind(TextField::getValue, TextField::setValue);
         fieldBinder.forField(emailAddField)
-                .withValidator(ValidatorFactory.getValidator(String.class,"email"))
+                .withValidator(ValidatorFactory.getStringValidator("email"))
                 .bind(TextField::getValue, TextField::setValue);
         emailAddType.setWidth("20%");
 

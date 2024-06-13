@@ -66,7 +66,6 @@ public class MainView extends VerticalLayout {
                 editForm.editPerson(e.getItem(), false);
             }
         });
-
         addPerson.addClickListener(
                 e -> {
                     Person person = new Person();
@@ -74,9 +73,7 @@ public class MainView extends VerticalLayout {
                     person.setMails(new ArrayList<>());
                     editForm.editPerson(person, true);
                 });
-
-        editForm.setChangeHandler(() ->
-        {
+        editForm.setChangeHandler(() -> {
             editForm.setVisible(false);
             listPeople(filterField.getValue());
         });
