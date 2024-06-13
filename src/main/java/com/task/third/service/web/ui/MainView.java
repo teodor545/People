@@ -89,12 +89,8 @@ public class MainView extends VerticalLayout {
         grid.setColumns("fullName", "pin", "addresses", "mails");
         grid.getColumnByKey("fullName").setSortable(true).setHeader("Name");
         grid.getColumnByKey("pin").setSortable(false).setHeader("PIN");
-        Grid.Column<Person> emails = grid.getColumnByKey("mails");
-        emails.setHeader("Mails");
-        emails.setRenderer(createMailRenderer());
-        Grid.Column<Person> addresses = grid.getColumnByKey("addresses");
-        addresses.setHeader("Addresses");
-        addresses.setRenderer(createAddressRenderer());
+        grid.getColumnByKey("mails").setHeader("Mails").setRenderer(createMailRenderer());
+        grid.getColumnByKey("addresses").setHeader("Addresses").setRenderer(createAddressRenderer());
     }
 
     private static ComponentRenderer<VerticalLayout, Person> createMailRenderer() {

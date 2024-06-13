@@ -166,7 +166,7 @@ public class EditForm extends FormLayout {
     private void configureAddressGridForm() {
         addressEditGrid.setColumns("addressInfo", "addressType");
         Grid.Column<Address> addressInfo = addressEditGrid.getColumnByKey("addressInfo").setWidth("300px").setFlexGrow(0).setHeader("Address");
-        Grid.Column<Address> addressType = addressEditGrid.getColumnByKey("addressType").setWidth("100px").setFlexGrow(0).setHeader("Type");
+        Grid.Column<Address> addressType = addressEditGrid.getColumnByKey("addressType").setWidth("120px").setFlexGrow(0).setHeader("Type");
         addressEditGrid.setAllRowsVisible(true);
         addressEditGrid.setWidthFull();
 
@@ -230,14 +230,8 @@ public class EditForm extends FormLayout {
 
     private void configureEmailGridForm() {
         mailEditGrid.setColumns("email", "emailType");
-        Grid.Column<Mail> emailColumn = mailEditGrid.getColumnByKey("email")
-                .setWidth("300px")
-                .setFlexGrow(0)
-                .setHeader("Email");
-        Grid.Column<Mail> emailTypeColumn = mailEditGrid.getColumnByKey("emailType")
-                .setWidth("100px")
-                .setFlexGrow(0)
-                .setHeader("Type");
+        Grid.Column<Mail> emailColumn = mailEditGrid.getColumnByKey("email").setWidth("300px").setFlexGrow(0).setHeader("Email");
+        Grid.Column<Mail> emailTypeColumn = mailEditGrid.getColumnByKey("emailType").setWidth("120px").setFlexGrow(0).setHeader("Type");
         mailEditGrid.setAllRowsVisible(true);
         mailEditGrid.setWidthFull();
 
@@ -245,7 +239,7 @@ public class EditForm extends FormLayout {
         editor.setBinder(mailBinder);
         editor.setBuffered(true);
 
-        EmailField mailEditField = new EmailField();
+        TextField mailEditField = new TextField();
         mailEditField.setRequired(false);
         mailEditField.setWidthFull();
         mailBinder.forField(mailEditField)
